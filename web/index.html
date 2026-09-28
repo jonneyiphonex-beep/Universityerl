@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#163d36">
+    <meta name="description" content="لوحة إدارة الهيكل الأكاديمي للجامعة">
+    <title>جامعة المدار | الإدارة الأكاديمية</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="القائمة الرئيسية">
+        <a class="brand" href="#overview" aria-label="جامعة المدار، الصفحة الرئيسية" data-view="overview">
+          <span class="brand-mark" aria-hidden="true">م</span>
+          <span class="brand-copy">
+            <strong>جامعة المدار</strong>
+            <small>نظام الإدارة الأكاديمية</small>
+          </span>
+        </a>
+
+        <div class="nav-caption">مساحة العمل</div>
+        <nav class="primary-nav">
+          <button class="nav-link is-active" type="button" data-view="overview" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">◫</span>
+            <span>نظرة عامة</span>
+          </button>
+          <button class="nav-link" type="button" data-view="units">
+            <span class="nav-icon" aria-hidden="true">⌘</span>
+            <span>الهيكل الأكاديمي</span>
+            <span class="nav-count" id="nav-unit-count">0</span>
+          </button>
+          <button class="nav-link" type="button" data-view="monitor">
+            <span class="nav-icon" aria-hidden="true">◴</span>
+            <span>مراقبة الموارد</span>
+          </button>
+          <button class="nav-link" type="button" data-view="offices">
+            <span class="nav-icon" aria-hidden="true">▧</span>
+            <span>مكاتب الجامعة</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="region-note">
+            <span class="region-note-mark" aria-hidden="true">◎</span>
+            <div>
+              <strong>إدارة متعددة المناطق</strong>
+              <small>عرض موحد للفروع والكليات</small>
+            </div>
+          </div>
+          <div class="profile-row">
+            <span class="profile-avatar" aria-hidden="true">م</span>
+            <span class="profile-copy"><strong>مدير النظام</strong><small>صلاحيات تجريبية</small></span>
+            <span class="profile-menu" aria-hidden="true">•••</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" type="button" aria-label="فتح القائمة" aria-expanded="false">
+            <span aria-hidden="true">☰</span>
+          </button>
+          <div class="breadcrumbs"><span>الإدارة</span><span class="crumb-divider">/</span><strong id="current-page-label">نظرة عامة</strong></div>
+          <div class="topbar-meta">
+            <span class="local-status"><span class="status-dot"></span> بيانات محلية تجريبية</span>
+            <span class="topbar-date" id="today-date"></span>
+          </div>
+        </header>
+
+        <div class="page-content">
+          <section class="view-panel is-visible" id="overview-view" aria-labelledby="overview-title">
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">مركز الإدارة المؤسسية</p>
+                <h1 id="overview-title">نظرة عامة</h1>
+                <p class="heading-subtitle">صورة سريعة عن الهيكل الأكاديمي في جميع المناطق.</p>
+              </div>
+              <button class="button button-primary" type="button" data-action="add-unit">
+                <span class="button-icon" aria-hidden="true">＋</span> إضافة وحدة
+              </button>
+            </div>
+
+            <div class="overview-banner">
+              <div class="banner-copy">
+                <span class="banner-kicker">العام الجامعي</span>
+                <strong>2025 / 2026</strong>
+                <span>بيانات الهيكل محدثة على هذا الجهاز</span>
+              </div>
+              <div class="banner-art" aria-hidden="true">
+                <span class="banner-ring ring-one"></span>
+                <span class="banner-ring ring-two"></span>
+                <span class="banner-spark">✳</span>
+                <span class="banner-number" id="banner-unit-count">00</span>
+              </div>
+              <div class="banner-side-label">وحدة أكاديمية وإدارية</div>
+            </div>
+
+            <div class="metrics-grid" id="metrics-grid" aria-live="polite"></div>
+
+            <div class="overview-grid">
+              <section class="content-section distribution-section" aria-labelledby="distribution-title">
+                <div class="section-heading">
+                  <div><p class="section-kicker">توزيع الوحدات</p><h2 id="distribution-title">مكونات الهيكل</h2></div>
+                  <button class="text-button" type="button" data-view="units">عرض الهيكل <span aria-hidden="true">←</span></button>
+                </div>
+                <div class="distribution-list" id="distribution-list"></div>
+              </section>
+
+              <section class="content-section activity-section" aria-labelledby="activity-title">
+                <div class="section-heading">
+                  <div><p class="section-kicker">آخر التغييرات</p><h2 id="activity-title">سجل النشاط</h2></div>
+                  <span class="activity-live"><span class="status-dot"></span> محلي</span>
+                </div>
+                <div class="activity-list" id="activity-list"></div>
+              </section>
+            </div>
+
+            <section class="content-section recent-section" aria-labelledby="recent-title">
+              <div class="section-heading">
+                <div><p class="section-kicker">نظرة سريعة</p><h2 id="recent-title">أحدث الوحدات</h2></div>
+                <button class="text-button" type="button" data-view="units">كل الوحدات <span aria-hidden="true">←</span></button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>اسم الوحدة</th><th>النوع</th><th>الرمز</th><th>الوحدة الأعلى</th><th>الحالة</th></tr></thead>
+                  <tbody id="recent-table-body"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <p class="local-disclaimer">هذه واجهة تجريبية تحفظ التغييرات في مساحة التخزين المحلية للمتصفح فقط، ولا تتصل بخادم الجامعة.</p>
+          </section>
+
+          <section class="view-panel" id="units-view" aria-labelledby="units-title" hidden>
+            <div class="page-heading units-heading">
+              <div>
+                <p class="eyebrow">إدارة البيانات الأساسية</p>
+                <h1 id="units-title">الهيكل الأكاديمي</h1>
+                <p class="heading-subtitle">نظّم الوحدات من المنطقة حتى البرنامج الأكاديمي.</p>
+              </div>
+              <div class="heading-actions">
+                <button class="button button-secondary" id="export-button" type="button"><span class="button-icon" aria-hidden="true">↓</span> تصدير CSV</button>
+                <button class="button button-primary" type="button" data-action="add-unit"><span class="button-icon" aria-hidden="true">＋</span> إضافة وحدة</button>
+              </div>
+            </div>
+
+            <div class="units-toolbar">
+              <label class="search-field">
+                <span aria-hidden="true">⌕</span>
+                <span class="visually-hidden">ابحث عن وحدة</span>
+                <input id="unit-search" type="search" placeholder="ابحث بالاسم أو الرمز" autocomplete="off">
+                <kbd>/</kbd>
+              </label>
+              <label class="filter-field"><span>نوع الوحدة</span>
+                <select id="type-filter">
+                  <option value="all">كل الأنواع</option>
+                  <option value="region">المناطق</option>
+                  <option value="campus">الفروع</option>
+                  <option value="college">الكليات</option>
+                  <option value="department">الأقسام</option>
+                  <option value="program">البرامج</option>
+                </select>
+              </label>
+              <span class="results-count" id="results-count"></span>
+            </div>
+
+            <section class="content-section units-table-section" aria-label="قائمة الوحدات الأكاديمية">
+              <div class="table-wrap">
+                <table class="units-table">
+                  <thead><tr><th>الوحدة</th><th>النوع</th><th>الرمز</th><th>تتبع إلى</th><th>الحالة</th><th><span class="visually-hidden">الإجراءات</span></th></tr></thead>
+                  <tbody id="units-table-body"></tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="empty-state" hidden>
+                <span class="empty-mark" aria-hidden="true">⌕</span>
+                <strong>لا توجد نتائج مطابقة</strong>
+                <span>جرّب تغيير كلمات البحث أو نوع الوحدة.</span>
+              </div>
+            </section>
+            <p class="local-disclaimer">تُحفظ التعديلات على هذا الجهاز فقط. لا تستخدم بيانات شخصية حقيقية في هذه النسخة.</p>
+          </section>
+
+          <section class="view-panel" id="monitor-view" aria-labelledby="monitor-title" hidden>
+            <div class="page-heading monitor-heading">
+              <div>
+                <p class="eyebrow">حالة الجهاز والاتصال</p>
+                <h1 id="monitor-title">مراقبة الموارد</h1>
+                <p class="heading-subtitle">مؤشرات يتيحها المتصفح، من دون إرسال بيانات القياس إلى جهة خارجية.</p>
+              </div>
+              <button class="button button-secondary" id="refresh-monitor" type="button"><span class="button-icon" aria-hidden="true">↻</span> تحديث القياسات</button>
+            </div>
+
+            <div class="monitor-api-notice" role="status">
+              <span class="notice-mark" aria-hidden="true">!</span>
+              <div><strong id="monitor-api-title">قياسات الخادم غير متصلة</strong><p>استخدام CPU وRAM ومساحة القرص الفعلية ومعدل نقل الشبكة للخادم تتطلب خدمة مراقبة من Erlang. هذه الصفحة لا تعرض قيمًا تخمينية لهذه المؤشرات.</p></div>
+              <span class="api-state">API غير مربوط</span>
+            </div>
+
+            <div class="monitor-grid">
+              <article class="monitor-card">
+                <div class="monitor-card-heading"><div><p class="section-kicker">المعالج</p><h2>CPU</h2></div><span class="monitor-icon cpu-icon" aria-hidden="true">◉</span></div>
+                <div class="monitor-reading"><strong id="cpu-cores">—</strong><span>نواة منطقية متاحة للمتصفح</span></div>
+                <div class="monitor-detail"><span>استخدام المعالج</span><strong id="cpu-usage">غير متاح دون خدمة النظام</strong></div>
+                <p class="monitor-footnote">عدد الأنوية لا يمثل نسبة استخدام المعالج أو سرعته.</p>
+              </article>
+
+              <article class="monitor-card">
+                <div class="monitor-card-heading"><div><p class="section-kicker">الذاكرة</p><h2>RAM</h2></div><span class="monitor-icon ram-icon" aria-hidden="true">▤</span></div>
+                <div class="monitor-reading"><strong id="memory-estimate">—</strong><span>تقدير ذاكرة الجهاز</span></div>
+                <div class="monitor-detail"><span>الذاكرة المستخدمة</span><strong id="memory-usage">غير متاحة دون خدمة النظام</strong></div>
+                <p class="monitor-footnote">قد لا يكشف المتصفح تقدير الذاكرة لأسباب الخصوصية.</p>
+              </article>
+
+              <article class="monitor-card">
+                <div class="monitor-card-heading"><div><p class="section-kicker">الاتصال</p><h2>سرعة الإنترنت</h2></div><span class="monitor-icon network-icon" aria-hidden="true">⌁</span></div>
+                <div class="monitor-reading"><strong id="network-speed">—</strong><span>ميغابت/ث تقديريًا</span></div>
+                <div class="monitor-detail"><span>نوع الاتصال</span><strong id="network-type">غير متاح في هذا المتصفح</strong></div>
+                <div class="monitor-detail"><span>حالة الشبكة</span><strong id="network-status">جارٍ التحقق</strong></div>
+                <p class="monitor-footnote">السرعة تقدير من المتصفح وليست اختبار سرعة فعليًا.</p>
+              </article>
+
+              <article class="monitor-card">
+                <div class="monitor-card-heading"><div><p class="section-kicker">التخزين</p><h2>مساحة المتصفح</h2></div><span class="monitor-icon disk-icon" aria-hidden="true">▣</span></div>
+                <div class="monitor-reading"><strong id="storage-used">—</strong><span>مستخدمة من مساحة الموقع</span></div>
+                <div class="monitor-meter" aria-label="نسبة مساحة تخزين الموقع المستخدمة"><span id="storage-meter"></span></div>
+                <div class="monitor-detail"><span>حصة الموقع في المتصفح</span><strong id="storage-quota">جارٍ القياس</strong></div>
+                <p class="monitor-footnote">هذه حصة تخزين بيانات الموقع، وليست مساحة القرص الصلب الكلية.</p>
+              </article>
+            </div>
+
+            <div class="monitor-updated"><span class="status-dot"></span><span>آخر تحديث</span><time id="monitor-updated">—</time></div>
+          </section>
+
+          <section class="view-panel" id="offices-view" aria-labelledby="offices-title" hidden>
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">مساحات العمل حسب الاختصاص</p>
+                <h1 id="offices-title">مكاتب الجامعة والإدارات</h1>
+                <p class="heading-subtitle">اختر المكتب لعرض لوحة مؤشرات ومهام مخصصة لمسؤولياته.</p>
+              </div>
+              <span class="demo-tag"><span class="status-dot"></span> بيانات تجريبية</span>
+            </div>
+            <div class="office-grid" id="office-grid"></div>
+            <p class="local-disclaimer">هذه لوحات عرض تجريبية؛ لا تُنشئ صلاحيات دخول ولا تعتمد قرارات إدارية.</p>
+          </section>
+
+          <section class="view-panel" id="office-view" aria-labelledby="office-title" hidden>
+            <div class="page-heading office-heading">
+              <div>
+                <button class="text-button office-back" type="button" data-view="offices"><span aria-hidden="true">→</span> كل المكاتب</button>
+                <p class="eyebrow" id="office-eyebrow">لوحة الإدارة</p>
+                <h1 id="office-title">—</h1>
+                <p class="heading-subtitle" id="office-description"></p>
+              </div>
+              <span class="demo-tag">نموذج تجريبي</span>
+            </div>
+            <div class="office-metrics" id="office-metrics"></div>
+            <div class="office-content-grid">
+              <section class="content-section office-tasks-section" aria-labelledby="office-tasks-title">
+                <div class="section-heading">
+                  <div><p class="section-kicker">متابعة العمل</p><h2 id="office-tasks-title">المعاملات والمهام</h2></div>
+                  <span class="activity-live"><span class="status-dot"></span> تجريبي</span>
+                </div>
+                <div class="table-wrap">
+                  <table class="office-tasks-table">
+                    <thead><tr><th>المرجع</th><th>الموضوع</th><th>الجهة</th><th>الاستحقاق</th><th>الحالة</th><th><span class="visually-hidden">الإجراء</span></th></tr></thead>
+                    <tbody id="office-tasks"></tbody>
+                  </table>
+                </div>
+              </section>
+              <section class="content-section office-focus-section" aria-labelledby="office-focus-title">
+                <div class="section-heading"><div><p class="section-kicker">أولويات المكتب</p><h2 id="office-focus-title">محاور المتابعة</h2></div></div>
+                <ul class="office-focus-list" id="office-focus-list"></ul>
+              </section>
+            </div>
+            <p class="local-disclaimer">المهام والأرقام للعرض فقط. الاعتماد والتكليفات الفعلية تتطلب حسابات وصلاحيات وخدمة Erlang متصلة.</p>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <dialog class="unit-dialog" id="unit-dialog" aria-labelledby="dialog-title">
+      <form id="unit-form" novalidate>
+        <div class="dialog-heading">
+          <div><p class="eyebrow">بيانات الهيكل</p><h2 id="dialog-title">إضافة وحدة</h2></div>
+          <button class="icon-button" type="button" id="close-dialog" aria-label="إغلاق">×</button>
+        </div>
+        <input type="hidden" id="unit-id">
+        <label class="form-field">نوع الوحدة
+          <select id="unit-type" required>
+            <option value="region">منطقة</option>
+            <option value="campus">فرع</option>
+            <option value="college">كلية</option>
+            <option value="department">قسم</option>
+            <option value="program">برنامج أكاديمي</option>
+          </select>
+        </label>
+        <label class="form-field" id="parent-field" hidden>الوحدة الأعلى
+          <select id="unit-parent"></select>
+          <small class="field-hint" id="parent-hint"></small>
+        </label>
+        <div class="form-row">
+          <label class="form-field">اسم الوحدة
+            <input id="unit-name" type="text" maxlength="100" required placeholder="مثال: كلية الهندسة">
+          </label>
+          <label class="form-field">الرمز
+            <input id="unit-code" type="text" maxlength="24" required placeholder="مثال: ENG" dir="ltr" autocomplete="off">
+          </label>
+        </div>
+        <label class="form-field">الحالة
+          <select id="unit-status"><option value="active">نشطة</option><option value="inactive">غير نشطة</option></select>
+        </label>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-secondary" type="button" id="cancel-dialog">إلغاء</button>
+          <button class="button button-primary" type="submit"><span class="button-icon" aria-hidden="true">✓</span> حفظ الوحدة</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
