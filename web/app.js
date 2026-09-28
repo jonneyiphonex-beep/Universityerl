@@ -36,7 +36,7 @@ const seedActivity = [
   { action: "إضافة تجريبية", name: "كلية الطب", detail: "فرع جدة", createdAt: "2026-08-07T08:00:00.000Z" },
 ];
 
-function loadState() {
+function loadLocalState() {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (stored && Array.isArray(stored.units) && Array.isArray(stored.activity)) return stored;
@@ -46,7 +46,8 @@ function loadState() {
   return { units: structuredClone(seedUnits), activity: structuredClone(seedActivity) };
 }
 
-let state = loadState();
+let state = loadLocalState();
+let apiConnected = false;
 let toastTimer;
 let monitorRequestId = 0;
 
@@ -68,6 +69,7 @@ const elements = {
   dialog: document.getElementById("unit-dialog"),
   form: document.getElementById("unit-form"),
   toast: document.getElementById("toast"),
+  connectionLabel: document.getElementById("connection-label"),
 };
 
 function escapeHTML(value) {
@@ -82,6 +84,34 @@ function persist() {
   } catch (error) {
     showToast("تعذر حفظ البيانات في هذا المتصفح.");
     console.error("تعذر حفظ بيانات الواجهة التجريبية.", error);
+  }
+}
+
+async function apiRequest(path, options = {}) {
+  const response = await fetch(path, {
+    ...options,
+    headers: { "Content-Type": "application/json", ...options.headers },
+  });
+  const body = await response.json();
+  if (!response.ok) throw new Error(body.error || "تعذر تنفيذ الطلب على الخادم.");
+  return body;
+}
+
+async function syncFromServer() {
+  try {
+    const [units, activity] = await Promise.all([
+      apiRequest("/api/units"),
+      apiRequest("/api/activity"),
+    ]);
+    if (!Array.isArray(units) || !Array.isArray(activity)) throw new Error("استجابة API غير صالحة.");
+    state = { units, activity };
+    apiConnected = true;
+    elements.connectionLabel.textContent = "متصل بخادم Erlang";
+    persist();
+    renderAll();
+  } catch (error) {
+    apiConnected = false;
+    elements.connectionLabel.textContent = "بيانات محلية تجريبية";
   }
 }
 
@@ -240,6 +270,19 @@ async function refreshMonitor() {
   document.getElementById("network-status").textContent = navigator.onLine ? "متصل بالشبكة" : "غير متصل";
   document.getElementById("monitor-updated").textContent = new Intl.DateTimeFormat("ar", { hour: "numeric", minute: "2-digit" }).format(new Date());
 
+  try {
+    const health = await apiRequest("/api/health");
+    if (requestId !== monitorRequestId) return;
+    document.getElementById("monitor-api-title").textContent = "خدمة Erlang متصلة؛ قياسات النظام التفصيلية غير متاحة";
+    document.querySelector(".api-state").textContent = "API متصل";
+    document.getElementById("memory-usage").textContent = formatStorage(health.vmMemoryBytes);
+  } catch (error) {
+    if (requestId !== monitorRequestId) return;
+    document.getElementById("monitor-api-title").textContent = "قياسات الخادم غير متصلة";
+    document.querySelector(".api-state").textContent = "API غير مربوط";
+    document.getElementById("memory-usage").textContent = "غير متاح دون خدمة النظام";
+  }
+
   const usage = document.getElementById("storage-used");
   const quota = document.getElementById("storage-quota");
   const meter = document.getElementById("storage-meter");
@@ -322,7 +365,7 @@ function recordActivity(action, unit) {
   state.activity = state.activity.slice(0, 20);
 }
 
-function saveUnit(event) {
+async function saveUnit(event) {
   event.preventDefault();
   const id = document.getElementById("unit-id").value;
   const type = document.getElementById("unit-type").value;
@@ -360,6 +403,21 @@ function saveUnit(event) {
     status,
     createdAt: existing?.createdAt || new Date().toISOString(),
   };
+  if (apiConnected) {
+    try {
+      await apiRequest(existing ? `/api/units/${encodeURIComponent(id)}` : "/api/units", {
+        method: existing ? "PUT" : "POST",
+        body: JSON.stringify(unit),
+      });
+      await syncFromServer();
+      closeDialog();
+      showToast(existing ? "تم تحديث الوحدة على الخادم." : "تمت إضافة الوحدة على الخادم.");
+    } catch (requestError) {
+      error.textContent = requestError.message;
+      error.hidden = false;
+    }
+    return;
+  }
   if (existing) state.units = state.units.map((candidate) => candidate.id === id ? unit : candidate);
   else state.units.push(unit);
   recordActivity(existing ? "تعديل" : "إضافة", unit);
@@ -369,7 +427,7 @@ function saveUnit(event) {
   showToast(existing ? "تم تحديث الوحدة محليًا." : "تمت إضافة الوحدة محليًا.");
 }
 
-function deleteUnit(id) {
+async function deleteUnit(id) {
   const unit = state.units.find((candidate) => candidate.id === id);
   if (!unit) return;
   const children = state.units.filter((candidate) => candidate.parentId === id);
@@ -377,7 +435,17 @@ function deleteUnit(id) {
     showToast(`لا يمكن الحذف؛ توجد ${children.length} وحدة تابعة. انقلها أو احذفها أولًا.`);
     return;
   }
-  if (!window.confirm(`حذف «${unit.name}» من البيانات المحلية؟`)) return;
+  if (!window.confirm(`حذف «${unit.name}» ${apiConnected ? "من الخادم" : "من البيانات المحلية"}؟`)) return;
+  if (apiConnected) {
+    try {
+      await apiRequest(`/api/units/${encodeURIComponent(id)}`, { method: "DELETE" });
+      await syncFromServer();
+      showToast("تم حذف الوحدة من الخادم.");
+    } catch (error) {
+      showToast(error.message);
+    }
+    return;
+  }
   state.units = state.units.filter((candidate) => candidate.id !== id);
   recordActivity("حذف", unit);
   persist();
@@ -461,3 +529,7 @@ try {
 }
 renderAll();
 refreshMonitor();
+syncFromServer();
+setInterval(() => {
+  if (!apiConnected) syncFromServer();
+}, 15000);

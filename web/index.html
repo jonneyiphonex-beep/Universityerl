@@ -64,7 +64,7 @@
           </button>
           <div class="breadcrumbs"><span>الإدارة</span><span class="crumb-divider">/</span><strong id="current-page-label">نظرة عامة</strong></div>
           <div class="topbar-meta">
-            <span class="local-status"><span class="status-dot"></span> بيانات محلية تجريبية</span>
+            <span class="local-status"><span class="status-dot"></span><span id="connection-label">بيانات محلية تجريبية</span></span>
             <span class="topbar-date" id="today-date"></span>
           </div>
         </header>
@@ -194,7 +194,7 @@
 
             <div class="monitor-api-notice" role="status">
               <span class="notice-mark" aria-hidden="true">!</span>
-              <div><strong id="monitor-api-title">قياسات الخادم غير متصلة</strong><p>استخدام CPU وRAM ومساحة القرص الفعلية ومعدل نقل الشبكة للخادم تتطلب خدمة مراقبة من Erlang. هذه الصفحة لا تعرض قيمًا تخمينية لهذه المؤشرات.</p></div>
+              <div><strong id="monitor-api-title">قياسات الخادم غير متصلة</strong><p>تعرض الخدمة ذاكرة Erlang VM فقط. قياس CPU وRAM الفعلية والقرص ومعدل نقل الشبكة غير متاح، ولن تعرض الصفحة قيمًا تخمينية لهذه المؤشرات.</p></div>
               <span class="api-state">API غير مربوط</span>
             </div>
 
@@ -209,7 +209,7 @@
               <article class="monitor-card">
                 <div class="monitor-card-heading"><div><p class="section-kicker">الذاكرة</p><h2>RAM</h2></div><span class="monitor-icon ram-icon" aria-hidden="true">▤</span></div>
                 <div class="monitor-reading"><strong id="memory-estimate">—</strong><span>تقدير ذاكرة الجهاز</span></div>
-                <div class="monitor-detail"><span>الذاكرة المستخدمة</span><strong id="memory-usage">غير متاحة دون خدمة النظام</strong></div>
+                <div class="monitor-detail"><span>ذاكرة Erlang VM</span><strong id="memory-usage">غير متاحة دون خدمة النظام</strong></div>
                 <p class="monitor-footnote">قد لا يكشف المتصفح تقدير الذاكرة لأسباب الخصوصية.</p>
               </article>
 
